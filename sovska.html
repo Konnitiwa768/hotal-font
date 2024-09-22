@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>疑似漢字フォント</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/1.3.3/opentype.min.js"></script>
+</head>
+<body>
+    <h1>疑似漢字フォントの表示</h1>
+    <canvas id="canvas" width="600" height="400"></canvas>
+    <br>
+    <button id="downloadButton">フォントをダウンロード</button>
+    <script>
+        // フォントを定義
+        const font = new opentype.Font({
+            familyName: 'PseudoKanji',
+            styleName: 'Regular',
+            unitsPerEm: 1000,
+            ascender: 800,
+            descender: -200,
+            glyphs: [
+                // 否 (×)
+                new opentype.Glyph({
+                    name: 'hi',
+                    unicode: 12368,
+                    advanceWidth: 1000,
+                    path: new opentype.Path()
+                        .moveTo(100, 100)
+                        .lineTo(900, 900)
+                        .moveTo(900, 100)
+                        .lineTo(100, 900)
+                }),
+                // 口 (丸)
+                new opentype.Glyph({
+                    name: 'kuchi',
+                    unicode: 12369,
+                    advanceWidth: 1000,
+                    path: new opentype.Path()
+                        .addArc(500, 500, 400, 0, Math.PI * 2) // 円を描く
+                }),
+                // 槍 (Ψ)
+                new opentype.Glyph({
+                    name: 'yari',
+                    unicode: 12370,
+                    advanceWidth: 1000,
+                    path: new opentype.Path()
+                        .moveTo(500, 100)
+                        .lineTo(700, 900)
+                        .lineTo(300, 900)
+                        .closePath()
+                }),
+                // 礼 (左に人, 右に十字)
+                new opentype.Glyph({
+                    name: 'rei',
+                    unicode: 12371,
+                    advanceWidth: 1000,
+                    path: new opentype.Path()
+                        .moveTo(200, 300)
+                        .lineTo(200, 500) // 左に人
+                        .moveTo(800, 300)
+                        .lineTo(800, 700) // 右の十字
+                        .moveTo(700, 500)
+                        .lineTo(900, 500)
+                        .moveTo(800, 400)
+                        .lineTo(800, 600)
+                }),
+                // 交 (十字)
+                new opentype.Glyph({
+                    name: 'kō',
+                    unicode: 12372,
+                    advanceWidth: 1000,
+                    path: new opentype.Path()
+                        .moveTo(100, 500)
+                        .lineTo(900, 500)
+                        .moveTo(500, 100)
+                        .lineTo(500, 900)
+                })
+            ]
+        });
+
+        // Canvasに描画
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#000';
+        ctx.font = '48px PseudoKanji';
+        ctx.textBaseline = 'middle';
+
+        // 各グリフを描画
+        const drawGlyph = (glyph, x, y) => {
+            const path = glyph.getPath(x, y, 48);
+            path.fill = true;
+            path.stroke = false;
+            path.draw(ctx);
+        };
+
+        // 各疑似漢字の描画
+        drawGlyph(font.glyphs.find(g => g.name === 'hi'), 50, 200);
+        drawGlyph(font.glyphs.find(g => g.name === 'kuchi'), 150, 200);
+        drawGlyph(font.glyphs.find(g => g.name === 'yari'), 250, 200);
+        drawGlyph(font.glyphs.find(g => g.name === 'rei'), 350, 200);
+        drawGlyph(font.glyphs.find(g => g.name === 'kō'), 500, 200);
+
+        // フォントをダウンロードする関数
+        const downloadFont = () => {
+            const fontData = font.toArrayBuffer();
+            const blob = new Blob([fontData], { type: 'font/ttf' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'PseudoKanji.ttf';
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+
+        // ボタンのクリックイベント
+        document.getElementById('downloadButton').addEventListener('click', downloadFont);
+    </script>
+</body>
+</html>
