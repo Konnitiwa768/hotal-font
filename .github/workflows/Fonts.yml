@@ -3,10 +3,7 @@ name: Merge Font, Extract Glyphs & Assign Pronunciation
 on:
   push:
     branches:
-      - main   # ← ← ← 🔧 ブランチ制限（必要に応じて変更可）
-    paths:
-      - font/hotal-sans.ttf
-      - .github/workflows/merge-font.yml
+      - main   # ← ← ← 🔧 ブランチ制限（必要に応じて変更可能
 
 jobs:
   merge:
