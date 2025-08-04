@@ -1,48 +1,47 @@
-import os
+#!/usr/bin/env python3
+import fontforge
 import requests
-from fontTools.ttLib import TTFont
-from io import BytesIO
+import os
 
-def download_font(url):
-    response = requests.get(url)
-    response.raise_for_status()
-    return BytesIO(response.content)
+PHUN_URL = "https://kaeru2193.github.io/Phun-Resources/font/PhunDot-latest.ttf"
+HOTAL_PATH = "font/hotal-sans.ttf"
+OUTPUT_PATH = "font/hotal-sans2.ttf"
+PHUN_TEMP = "phundot-temp.ttf"
 
-def merge_fonts(primary_path, secondary_url, output_path):
-    # Load primary (base) font: hotal-sans
-    primary_font = TTFont(primary_path)
+# 1. PhunDot フォントを一時ダウンロード
+def download_phundot():
+    print("Downloading PhunDot...")
+    r = requests.get(PHUN_URL)
+    r.raise_for_status()
+    with open(PHUN_TEMP, "wb") as f:
+        f.write(r.content)
 
-    # Load secondary font (remote): PhunDot
-    secondary_stream = download_font(secondary_url)
-    secondary_font = TTFont(secondary_stream)
+# 2. フォントをマージ（競合時はhotalを優先）
+def merge_fonts():
+    print("Opening hotal-sans...")
+    hotal = fontforge.open(HOTAL_PATH)
 
-    # Glyphs already in primary
-    existing_glyphs = set(primary_font.getGlyphOrder())
-    existing_codepoints = {
-        cmap.get('cmap', {})
-        for cmap in primary_font['cmap'].tables
-    }
+    print("Opening phundot-temp...")
+    phun = fontforge.open(PHUN_TEMP)
 
-    # Merge glyphs from secondary that don't conflict
-    for table in secondary_font['cmap'].tables:
-        for codepoint, name in table.cmap.items():
-            if codepoint in existing_codepoints:
-                continue
-            if name in existing_glyphs:
-                continue
-            glyph = secondary_font['glyf'].glyphs.get(name)
-            if glyph:
-                primary_font['glyf'].glyphs[name] = glyph
-                primary_font['cmap'].tables[0].cmap[codepoint] = name
-                primary_font['hmtx'].metrics[name] = secondary_font['hmtx'].metrics[name]
-                existing_glyphs.add(name)
+    hotal_encoding = {g.unicode for g in hotal.glyphs() if g.unicode != -1}
 
-    # Save merged font
-    primary_font.save(output_path)
-    print(f"Merged font saved to: {output_path}")
+    for glyph in phun.glyphs():
+        if glyph.unicode == -1 or glyph.unicode in hotal_encoding:
+            continue  # Skip duplicate or undefined unicode
+        glyph_name = glyph.glyphname
+        phun.selection.select(glyph_name)
+        phun.copy()
+        hotal.createChar(glyph.unicode, glyph_name)
+        hotal.selection.select(glyph_name)
+        hotal.paste()
+    
+    print(f"Saving merged font to {OUTPUT_PATH}")
+    hotal.generate(OUTPUT_PATH)
+    hotal.close()
+    phun.close()
+    os.remove(PHUN_TEMP)
 
 if __name__ == "__main__":
-    primary_path = "font/hotal-sans.ttf"
-    secondary_url = "https://kaeru2193.github.io/Phun-Resources/font/PhunDot-latest.ttf"
-    output_path = "font/hotal-sans2.ttf"
-    merge_fonts(primary_path, secondary_url, output_path)
+    download_phundot()
+    merge_fonts()
