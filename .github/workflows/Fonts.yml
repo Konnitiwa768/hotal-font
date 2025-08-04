@@ -1,4 +1,4 @@
-name: Merge Font!
+name: Merge Font and Extract Glyphs
 
 on:
   push:
@@ -21,10 +21,13 @@ jobs:
       - name: Run merge_font.py
         run: python3 merge_font.py
 
-      - name: Commit merged font
+      - name: Extract glyphs to text
+        run: python3 extract_glyph.py
+
+      - name: Commit and Push Outputs
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add font/hotal-sans2.ttf
-          git commit -m "Auto-merged with PhunDot (FontForge)"
+          git add font/hotal-sans2.ttf glyphs_all.txt glyphs_added.txt
+          git commit -m "Auto-merge font + extract glyphs"
           git push
