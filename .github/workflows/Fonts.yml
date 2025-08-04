@@ -1,9 +1,12 @@
-name: Merge Font and Extract Glyphs
+name: Merge Font, Extract Glyphs & Assign Pronunciation
 
 on:
   push:
     branches:
-      - main
+      - main   # ← ← ← 🔧 ブランチ制限（必要に応じて変更可）
+    paths:
+      - font/hotal-sans.ttf
+      - .github/workflows/merge-font.yml
 
 jobs:
   merge:
@@ -18,16 +21,19 @@ jobs:
           sudo apt-get install -y fontforge python3-fontforge
           pip install requests
 
-      - name: Run merge_font.py
+      - name: Merge font
         run: python3 merge_font.py
 
-      - name: Extract glyphs to text
+      - name: Extract glyphs
         run: python3 extract_glyph.py
 
-      - name: Commit and Push Outputs
+      - name: Assign pronunciation
+        run: python3 assign_pronunciation.py
+
+      - name: Commit and push all outputs
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add font/hotal-sans2.ttf glyphs_all.txt glyphs_added.txt
-          git commit -m "Auto-merge font + extract glyphs"
+          git add font/hotal-sans2.ttf glyphs_all.txt glyphs_added.txt pronunciation.txt
+          git commit -m "Auto: merge, extract glyphs, assign pronunciation"
           git push
