@@ -21,7 +21,7 @@ jobs:
         run: pip install fonttools requests
 
       - name: Run Font Merge Script
-        run: python merge_fonts.py
+        run: python merge_font.py
 
       - name: Commit and Push Changes
         run: |
