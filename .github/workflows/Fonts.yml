@@ -1,0 +1,33 @@
+name: Merge Fonts
+
+on:
+  push:
+    paths:
+      - font/hotal-sans.ttf
+      - .github/workflows/merge-fonts.yml
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Dependencies
+        run: pip install fonttools requests
+
+      - name: Run Font Merge Script
+        run: python merge_fonts.py
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add font/hotal-sans2.ttf
+          git commit -m "Auto-merged hotal-sans with PhunDot"
+          git push
