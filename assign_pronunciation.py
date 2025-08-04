@@ -5,7 +5,7 @@ import random
 
 # 設定
 FONT_PATH = "font/hotal-sans2.ttf"
-PRON_FILE = "pronunciations.txt"
+PRON_FILE = "pronunciation.txt"
 
 # 音素定義
 initials = ["k", "g", "s", "z", "t", "d", "n", "m", "h", "y", "w", "r", "x", "j", "b", "p"]
