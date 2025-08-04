@@ -2,9 +2,8 @@ name: Merge Font!
 
 on:
   push:
-    paths:
-      - font/hotal-sans.ttf
-      - .github/workflows/merge-font.yml
+    branches:
+      - main
 
 jobs:
   merge:
