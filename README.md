@@ -5,3 +5,5 @@ https://github.com/konnitiwa768
 https://konnitiwa768.github.io/Astedmm/A.html
 https://google.com
 https://dict.kaeru2193.net
+https://qo.kaeru2193.net
+https://zpdic.ziphil.com/dictionary/5190?text=&mode=both&type=prefix&orderMode=createdDate&orderDirection=descending&ignoreCase=false&enableSuggestions=true&page=0
